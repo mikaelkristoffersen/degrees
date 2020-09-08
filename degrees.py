@@ -62,10 +62,10 @@ def main():
     load_data(directory)
     print("Data loaded.")
 
-    source = person_id_for_name(input("Name: "))
+    source = person_id_for_name("Gary Sinise")  # input("Name: "))
     if source is None:
         sys.exit("Person not found.")
-    target = person_id_for_name(input("Name: "))
+    target = person_id_for_name("Kevin Bacon")  # input("Name: "))
     if target is None:
         sys.exit("Person not found.")
 
@@ -91,9 +91,45 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    # source and target are person_ids
 
-    # TODO
-    raise NotImplementedError
+    # list all movies
+    # look for all actors in movies
+    # repeat untill target is found
+    # state is the current actor, parrent the related actore and action is the moive they were both in
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+
+    explored = set()
+
+    while True:
+        # If nothing left in frontier, then no path
+        if frontier.empty():
+           return None
+
+        # Choose a node from the frontier
+        node = frontier.remove()
+
+        # If node is the goal, then we have a solution
+        if node.state == target:
+            path = []
+            while node.parent is not None:
+                path.append((node.action, node.state))
+                node = node.parent
+            path.reverse()
+            return path
+
+        # Mark node as explored
+        explored.add(node.state)
+
+        # Add neighbors to frontier
+        for action in people[node.state]['movies']:
+            for state in movies[action]['stars']:
+                if not frontier.contains_state(state) and state not in explored:
+                    child = Node(state=state, parent=node, action=action)
+                    frontier.add(child)
+
 
 
 def person_id_for_name(name):
