@@ -111,21 +111,23 @@ def shortest_path(source, target):
         # Choose a node from the frontier
         node = frontier.remove()
 
-        # If node is the goal, then we have a solution
-        if node.state == target:
-            path = []
-            while node.parent is not None:
-                path.append((node.action, node.state))
-                node = node.parent
-            path.reverse()
-            return path
-
         # Mark node as explored
         explored.add(node.state)
 
         # Add neighbors to frontier
         for action in people[node.state]['movies']:
             for state in movies[action]['stars']:
+
+                # check if star is target
+                if state == target:
+                    path = [(action, state)]
+                    while node.parent is not None:
+                        path.append((node.action, node.state))
+                        node = node.parent
+                    path.reverse()
+                    return path
+
+                # If not target add node to frontier (if not already there)
                 if not frontier.contains_state(state) and state not in explored:
                     child = Node(state=state, parent=node, action=action)
                     frontier.add(child)
